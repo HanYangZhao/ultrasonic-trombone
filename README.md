@@ -1,2 +1,2 @@
 # ultrasonic-trumpet
-plastic trumpet with ultrasonic sensor for trumpet champ
+plastic trombone with ultrasonic sensor for trombone champ
