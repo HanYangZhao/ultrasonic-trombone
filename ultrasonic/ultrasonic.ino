@@ -1,3 +1,7 @@
+
+
+
+
 #include <Bounce2.h>
 #define PIN_MIC A8
 #define MOUSE_LEFTCLICK_PIN 23
@@ -9,12 +13,17 @@
 #define SLIDE_MAX 290
 #define TOOT_THRESHOLD 200
 #define DELAY 1
-#define AVG_TOOT_COUNT 5
+#define AVG_TOOT_COUNT 10
 // GLOBALS
 int toots[AVG_TOOT_COUNT]; // to hold the running average
 int mouse_y = 0;
 int avg_dist_mm = 0;
 float dist_cm = 0;
+int current_dist_mm = 0;
+int previous_dist_mm = 0;
+elapsedMillis currentTime;
+int previousTime = 0;
+float elapsedTimeSec = 0;
 Bounce2::Button mouse_button = Bounce2::Button();
 int initial_mic_level = 0;
 void us_setup()
@@ -166,24 +175,31 @@ void setup() {
   mouse_button.attach(MOUSE_LEFTCLICK_PIN, INPUT_PULLUP);
   mouse_button.interval(10);
   mouse_button.setPressedState(LOW);
-
+  previous_dist_mm = us_get_jarak(p_trigPin_cadangan, p_echoPin_cadangan) * 10;
+  previousTime = currentTime;
 }
 
 void loop()
 {
   tootTromboneClick();
 //  tootTromboneBlow(smoothJazz(analogRead(PIN_MIC)));
-  initial_mic_level = analogRead(PIN_MIC);
-  Serial.println(smoothJazz(analogRead(PIN_MIC) - initial_mic_level));
+//  initial_mic_level = analogRead(PIN_MIC);
+//  Serial.println(smoothJazz(analogRead(PIN_MIC) - initial_mic_level));
+  
   dist_cm =  us_get_jarak(p_trigPin_cadangan, p_echoPin_cadangan);
   avg_dist_mm = my_moving_average(dist_cm, 0) * 10;
-  mouse_y = (int)((float)SCREEN_HEIGHT * ((float)avg_dist_mm/(float)SLIDE_MAX)) - 0;
-  if (mouse_y > SCREEN_HEIGHT){
-    mouse_y = SCREEN_HEIGHT;
-  } else if (mouse_y < 0) {
-    mouse_y = 0;
-  }
-//  Serial.println(avg_dist_mm); 
-  Mouse.moveTo(500, mouse_y);
+  //mouse_y = (int)((float)SCREEN_HEIGHT * ((float)avg_dist_mm/(float)SLIDE_MAX)) - 0;
+  elapsedTimeSec =  float(currentTime - previousTime )/ float(1000) ;
+  previousTime = currentTime;
+  mouse_y = ((avg_dist_mm - previous_dist_mm) / elapsedTimeSec ) * -0.03;
+//  mouse_y = map(mouse_y, -200, 200, -127, 127);
+  previous_dist_mm = avg_dist_mm;
+//  if (mouse_y > SCREEN_HEIGHT){
+//    mouse_y = SCREEN_HEIGHT;
+//  } else if (mouse_y < 0) {
+//    mouse_y = 0;
+//  }
+ Serial.println(mouse_y); 
+ Mouse.move(500, mouse_y);
   delay(5);
 }
