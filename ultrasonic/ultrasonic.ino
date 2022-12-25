@@ -13,7 +13,7 @@
 #define SLIDE_MAX 290
 #define TOOT_THRESHOLD 200
 #define DELAY 1
-#define AVG_TOOT_COUNT 10
+#define AVG_TOOT_COUNT 15
 // GLOBALS
 int toots[AVG_TOOT_COUNT]; // to hold the running average
 int mouse_y = 0;
@@ -22,8 +22,11 @@ float dist_cm = 0;
 int current_dist_mm = 0;
 int previous_dist_mm = 0;
 elapsedMillis currentTime;
+float currentAcceleration = 0;
+float curerntSpeed = 0;
+float previousSpeed = 0;
 int previousTime = 0;
-float elapsedTimeSec = 0;
+float elapsedTimeMS = 0;
 Bounce2::Button mouse_button = Bounce2::Button();
 int initial_mic_level = 0;
 void us_setup()
@@ -189,17 +192,15 @@ void loop()
   dist_cm =  us_get_jarak(p_trigPin_cadangan, p_echoPin_cadangan);
   avg_dist_mm = my_moving_average(dist_cm, 0) * 10;
   //mouse_y = (int)((float)SCREEN_HEIGHT * ((float)avg_dist_mm/(float)SLIDE_MAX)) - 0;
-  elapsedTimeSec =  float(currentTime - previousTime )/ float(1000) ;
+  elapsedTimeMS =  float(currentTime - previousTime );
   previousTime = currentTime;
-  mouse_y = ((avg_dist_mm - previous_dist_mm) / elapsedTimeSec ) * -0.03;
+  float currentSpeed = float(avg_dist_mm - previous_dist_mm) / float(elapsedTimeMS); // mm/ms
+  currentAcceleration = abs(float(currentSpeed - previousSpeed) / float(elapsedTimeMS)) + 1; //mm/ms^2
+  previousSpeed = currentSpeed;
+  mouse_y = ((avg_dist_mm - previous_dist_mm) / elapsedTimeMS ) * -15 * currentAcceleration;
 //  mouse_y = map(mouse_y, -200, 200, -127, 127);
   previous_dist_mm = avg_dist_mm;
-//  if (mouse_y > SCREEN_HEIGHT){
-//    mouse_y = SCREEN_HEIGHT;
-//  } else if (mouse_y < 0) {
-//    mouse_y = 0;
-//  }
- Serial.println(mouse_y); 
- Mouse.move(500, mouse_y);
-  delay(5);
+  Serial.println(mouse_y); 
+  Mouse.move(500, mouse_y);
+  delay(3);
 }
