@@ -10,7 +10,8 @@
 #define p_echoPin_cadangan  0
 #define SCREEN_WIDTH 1920   // Doesn't have to be exact;
 #define SCREEN_HEIGHT 1080  // probably just the ratio.
-#define SLIDE_MAX 290
+#define SLIDE_MAX_MM 300
+#define SLIDE_RATIO = SCREEN_HEIGHT/SLIDER_MAX_MM
 #define TOOT_THRESHOLD 200
 #define DELAY 1
 #define AVG_TOOT_COUNT 15
@@ -22,7 +23,6 @@ float dist_cm = 0;
 int current_dist_mm = 0;
 int previous_dist_mm = 0;
 elapsedMillis currentTime;
-float currentAcceleration = 0;
 float curerntSpeed = 0;
 float previousSpeed = 0;
 int previousTime = 0;
@@ -191,14 +191,11 @@ void loop()
   
   dist_cm =  us_get_jarak(p_trigPin_cadangan, p_echoPin_cadangan);
   avg_dist_mm = my_moving_average(dist_cm, 0) * 10;
-  //mouse_y = (int)((float)SCREEN_HEIGHT * ((float)avg_dist_mm/(float)SLIDE_MAX)) - 0;
   elapsedTimeMS =  float(currentTime - previousTime );
   previousTime = currentTime;
   float currentSpeed = float(avg_dist_mm - previous_dist_mm) / float(elapsedTimeMS); // mm/ms
-  currentAcceleration = abs(float(currentSpeed - previousSpeed) / float(elapsedTimeMS)) + 1; //mm/ms^2
   previousSpeed = currentSpeed;
-  mouse_y = ((avg_dist_mm - previous_dist_mm) / elapsedTimeMS ) * -15 * currentAcceleration;
-//  mouse_y = map(mouse_y, -200, 200, -127, 127);
+  mouse_y = ((avg_dist_mm - previous_dist_mm) / elapsedTimeMS ) * -15;
   previous_dist_mm = avg_dist_mm;
   Serial.println(mouse_y); 
   Mouse.move(500, mouse_y);
