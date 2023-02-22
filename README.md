@@ -17,7 +17,7 @@ https://www.youtube.com/watch?v=xJ7Nz3pXyhk
 * 1 x Teensy 4.0 (3.2 should work as well)
 * 1 x Ultrasonic Sensor HC-SR04 or equivalent
 * 1 x Button
-* 1 x small piece of 
+* 1 x Perforated PCB board
 * 2 x 40 CM PVC tubing (0.58 inch / 15.8mm OD )
 * 3 x 3D printed parts
 
