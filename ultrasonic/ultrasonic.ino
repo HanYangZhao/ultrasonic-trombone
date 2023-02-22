@@ -11,7 +11,6 @@
 #define SCREEN_WIDTH 1920   // Doesn't have to be exact;
 #define SCREEN_HEIGHT 1080  // probably just the ratio.
 #define SLIDE_MAX_MM 300
-#define SLIDE_RATIO = SCREEN_HEIGHT/SLIDER_MAX_MM
 #define TOOT_THRESHOLD 200
 #define DELAY 1
 #define AVG_TOOT_COUNT 15
